@@ -1,0 +1,46 @@
+{
+	"name": "pingPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "PingBIM_Clearly",
+				"description": "Bekijkt of https://bim.clearly.app/ is nog steeds bereikbaar.",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://bim.clearly.app/api/ping",
+					"method": "GET"
+				}
+			},
+			{
+				"name": "PingPuntenwolken_CGI",
+				"description": "Kijkt of CGI puntenwolken services nog steeds beschikbaar zijn.",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "http://20.101.41.248:8081/api/ping",
+					"method": "GET"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-10-25T11:36:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

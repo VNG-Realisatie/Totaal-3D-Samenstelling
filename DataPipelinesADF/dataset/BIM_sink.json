@@ -1,0 +1,20 @@
+{
+	"name": "BIM_sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Voorportaal",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "test.gml",
+				"folderPath": "out/BIM",
+				"container": "testing-portaal"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

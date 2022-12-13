@@ -1,0 +1,19 @@
+{
+	"name": "ClearlyBinary",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://bim.clearly.app/api/organisations/61924d981cedc370173c7d5a/projects/61924e3b1cedc370173c7dee",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous",
+			"authHeaders": {
+				"Authorization": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
+		}
+	}
+}

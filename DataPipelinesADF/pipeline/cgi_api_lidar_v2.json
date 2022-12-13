@@ -1,0 +1,292 @@
+{
+	"name": "cgi_api_lidar_v2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat('http://20.101.41.248:8081/api/LiDAR/UploadPointcloudData?pointcloudUrl=', pipeline().parameters.inputBestandsnaamLink, '&', 'name=', pipeline().parameters.naamBestand)",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"X-API-KEY": {
+							"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/CGIkey/4284a7787f22454bbc76c4dbe1262883)",
+							"type": "Expression"
+						}
+					},
+					"body": "@concat('{','}')"
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Web1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "uid",
+					"value": {
+						"value": "@activity('Web1').output.uid",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains('success failed', variables('status'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@concat('http://20.101.41.248:8081/api/LiDAR/GetSingleProcessedPointcloud?uid=', variables('uid'))",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"headers": {
+									"X-API-KEY": {
+										"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/CGIkey/4284a7787f22454bbc76c4dbe1262883)",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Web",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "status",
+								"value": {
+									"value": "@activity('Web').output.status",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [
+								{
+									"activity": "Set variable2",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 10
+							}
+						}
+					],
+					"timeout": "7.00:00:00"
+				}
+			},
+			{
+				"name": "Switch1",
+				"type": "Switch",
+				"dependsOn": [
+					{
+						"activity": "Until1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@variables('status')",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "failed",
+							"activities": [
+								{
+									"name": "Fail",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "API foutmelding",
+										"errorCode": "0001"
+									}
+								}
+							]
+						},
+						{
+							"value": "success",
+							"activities": [
+								{
+									"name": "Copy data",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"maxConcurrentConnections": 1,
+												"requestMethod": "GET",
+												"requestTimeout": ""
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings",
+												"compressionProperties": {
+													"type": "ZipDeflateReadSettings"
+												}
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings",
+												"maxConcurrentConnections": 1,
+												"copyBehavior": "PreserveHierarchy"
+											}
+										},
+										"enableStaging": false,
+										"parallelCopies": 1,
+										"dataIntegrationUnits": 2
+									},
+									"inputs": [
+										{
+											"referenceName": "CGI_API_OUTPUT_deflate",
+											"type": "DatasetReference",
+											"parameters": {
+												"apiCall": "DownloadResultsFolder",
+												"uid": "@variables('uid')",
+												"apiName": "LiDAR"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Voorportaal_sink_deflate",
+											"type": "DatasetReference",
+											"parameters": {
+												"container": "testing-portaal",
+												"directory": "out"
+											}
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"initiatieWijze": {
+				"type": "string",
+				"defaultValue": "API"
+			},
+			"initiatiePersoon": {
+				"type": "string",
+				"defaultValue": "J. Doe"
+			},
+			"initiatorAfdeling": {
+				"type": "string",
+				"defaultValue": "Geodata"
+			},
+			"inputBestandsnaamLink": {
+				"type": "string",
+				"defaultValue": "https://voorportaal.blob.core.windows.net/testing-portaal/in/puntenwolken/cl24124c3b_alpierson-1_aligned_subsampled.las"
+			},
+			"initiatieSysteemId": {
+				"type": "string",
+				"defaultValue": "1"
+			},
+			"initiatieSysteemObjectid": {
+				"type": "string",
+				"defaultValue": "0000"
+			},
+			"naamBestand": {
+				"type": "string",
+				"defaultValue": "cl24124c3b_alpierson-1_aligned_subsampled.las"
+			},
+			"gebruikteAlgoritme": {
+				"type": "string",
+				"defaultValue": "UploadPointcloudData?"
+			},
+			"outputBestandsnaamLink": {
+				"type": "string"
+			},
+			"bestandsformaat": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"uid": {
+				"type": "String"
+			},
+			"status": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-08T12:28:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

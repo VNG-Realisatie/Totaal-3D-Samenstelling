@@ -1,0 +1,338 @@
+{
+	"name": "proefplatform_rioned",
+	"properties": {
+		"activities": [
+			{
+				"name": "Aanvraag GML bestand",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Authenticatie variabel",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat('https://geodata.gwsw.nl/',pipeline().parameters.stadScope,'/default/makegml?typenames=all&format=citygml')",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"headers": {
+						"Authorization": {
+							"value": "@variables('authenticatie')",
+							"type": "Expression"
+						},
+						"Accept": "application/json"
+					}
+				}
+			},
+			{
+				"name": "Set procesID",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Aanvraag GML bestand",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "procesId",
+					"value": {
+						"value": "@activity('Aanvraag GML bestand').output.process",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Verwerkingsstatus",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat('https://geodata.gwsw.nl/?process=',variables('procesId'))",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"headers": {
+						"Authorization": {
+							"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/RionedKey/9066a17ddeb34a178ca35591c48cbb3c)",
+							"type": "Expression"
+						},
+						"Accept": "application/json"
+					}
+				}
+			},
+			{
+				"name": "Set naamBestand",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Verwerkingsstatus",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "naamBestand",
+					"value": {
+						"value": "@activity('Verwerkingsstatus').output.files[0].name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Copy gwsw data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set naamBestand",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "GwswBinary",
+						"type": "DatasetReference",
+						"parameters": {
+							"naamBestand": {
+								"value": "@variables('naamBestand')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Voorportaal_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "testing-portaal",
+							"directory": "in/Rioned",
+							"filename": {
+								"value": "@variables('naamBestand')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "Set procesID",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 60
+				}
+			},
+			{
+				"name": "POST beheertool",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy gwsw data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/senddatatobeheertool",
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/sendToBeheertoolFunctionToken/086037d65d2541b598f43ad0c466d6a2)",
+							"type": "Expression"
+						},
+						"filename": {
+							"value": "@variables('naamBestand')",
+							"type": "Expression"
+						},
+						"filepath": {
+							"value": "@concat('in/Rioned/',variables('naamBestand'))",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "KeyVault",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://t3d-sleutels.vault.azure.net/secrets/RionedKey?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Authenticatie variabel",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "KeyVault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "authenticatie",
+					"value": {
+						"value": "@activity('KeyVault').output.value",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"initiatieWijze": {
+				"type": "string",
+				"defaultValue": "Handmatig"
+			},
+			"initiatorPersoon": {
+				"type": "string",
+				"defaultValue": "J. Doe"
+			},
+			"initiatorAfdeling": {
+				"type": "string",
+				"defaultValue": "Geodata"
+			},
+			"initiatieSysteemId": {
+				"type": "string",
+				"defaultValue": "Rioned"
+			},
+			"initiatieSysteemObjectid": {
+				"type": "string",
+				"defaultValue": "0000"
+			},
+			"gebruikteAlgoritme": {
+				"type": "string",
+				"defaultValue": "Null"
+			},
+			"outputBestandsnaamLink": {
+				"type": "string",
+				"defaultValue": "Null"
+			},
+			"bestandsformaat": {
+				"type": "string",
+				"defaultValue": ".gml"
+			},
+			"stadScope": {
+				"type": "string",
+				"defaultValue": "DenHaag"
+			}
+		},
+		"variables": {
+			"modelValide": {
+				"type": "String"
+			},
+			"procesId": {
+				"type": "String"
+			},
+			"naamBestand": {
+				"type": "String"
+			},
+			"initiatieSysteemVersie": {
+				"type": "String",
+				"defaultValue": "rioned1"
+			},
+			"authenticatie": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-11-30T14:28:06Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,494 @@
+{
+	"name": "proefplatform_puntenwolk",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data versturen naar de locale opslag",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "voorportaal_input_binary",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "testing-portaal",
+							"filename": {
+								"value": "@pipeline().parameters.naamBestand",
+								"type": "Expression"
+							},
+							"directory": "in/test"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Voorportaal_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "testing-portaal",
+							"directory": "out/amsterdam/test",
+							"filename": {
+								"value": "@pipeline().parameters.naamBestand",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Datamodel Validatie",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Opslaan objectvoorstel",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/Validatie",
+					"method": "POST",
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Fail Datamodel",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Input data niet volgens datamodel geleverd",
+					"errorCode": "400"
+				}
+			},
+			{
+				"name": "POST beheertool",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/senddatatobeheertool",
+					"method": "POST",
+					"headers": {
+						"Authorization": "Rz29bve3S2fGb4V2",
+						"filename": {
+							"value": "@pipeline().parameters.naamBestand",
+							"type": "Expression"
+						},
+						"filepath": {
+							"value": "@pipeline().parameters.inputBestandsnaamLink",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Beheertool ID",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "POST beheertool",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "beheertoolID",
+					"value": "23"
+				}
+			},
+			{
+				"name": "POST transformatie",
+				"description": "",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Authenticatie variabel",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat('http://20.101.41.248:8081/api/LiDAR/UploadPointcloudData?pointcloudUrl=', concat('https://voorportaal.blob.core.windows.net/testing-portaal/',pipeline().parameters.inputBestandsnaamLink, '/',pipeline().parameters.naamBestand), '&', 'name=', pipeline().parameters.naamBestand)",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"X-API-KEY": {
+							"value": "@variables('authenticatie')",
+							"type": "Expression"
+						},
+						"name": {
+							"value": "@pipeline().parameters.naamBestand",
+							"type": "Expression"
+						},
+						"pointcloudUrl": {
+							"value": "@concat('https://voorportaal.blob.core.windows.net/testing-portaal/',pipeline().parameters.inputBestandsnaamLink, '/',pipeline().parameters.naamBestand)",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Transformatie ID",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "POST transformatie",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "transformatieID",
+					"value": {
+						"value": "@activity('POST transformatie').output.uid",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "Transformatie ID",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(variables('transformatieStatus'),'success')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@concat('http://20.101.41.248:8081/api/LiDAR/GetSingleProcessedPointcloud?uid=', variables('transformatieID'))",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"headers": {
+									"X-API-KEY": {
+										"value": "@variables('authenticatie')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Web",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "transformatieStatus",
+								"value": {
+									"value": "@activity('Web').output.status",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [
+								{
+									"activity": "Set variable2",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 10
+							}
+						}
+					],
+					"timeout": "7.00:00:00"
+				}
+			},
+			{
+				"name": "Opslaan objectvoorstel",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Until1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET",
+							"requestTimeout": ""
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "CGI_API_OUTPUT",
+						"type": "DatasetReference",
+						"parameters": {
+							"apiCall": "DownloadResultsFolder",
+							"uid": {
+								"value": "@variables('transformatieID')",
+								"type": "Expression"
+							},
+							"apiName": "LIDAR"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Voorportaal_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "testing-portaal",
+							"directory": "out/puntenwolken",
+							"filename": "@replace(pipeline().parameters.naamBestand,'las','zip')"
+						}
+					}
+				]
+			},
+			{
+				"name": "KeyVault",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://t3d-sleutels.vault.azure.net/secrets/CGIkey?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Authenticatie variabel",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "KeyVault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "authenticatie",
+					"value": {
+						"value": "@activity('KeyVault').output.value",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"initiatieWijze": {
+				"type": "string",
+				"defaultValue": "API"
+			},
+			"initiatorPersoon": {
+				"type": "string",
+				"defaultValue": "P. Wolk"
+			},
+			"initiatorAfdeling": {
+				"type": "string",
+				"defaultValue": "Inspectie Dienst"
+			},
+			"inputBestandsnaamLink": {
+				"type": "string",
+				"defaultValue": "in/puntenwolken"
+			},
+			"initiatieSysteemId": {
+				"type": "string",
+				"defaultValue": "1"
+			},
+			"initiatieSysteemObjectid": {
+				"type": "string",
+				"defaultValue": "0000"
+			},
+			"naamBestand": {
+				"type": "string",
+				"defaultValue": "cl24124c3b_alpierson-1_aligned_wallsremoved_subsampled.las"
+			},
+			"gebruikteAlgoritme": {
+				"type": "string",
+				"defaultValue": "Lidar"
+			},
+			"outputBestandsnaamLink": {
+				"type": "string",
+				"defaultValue": "Null"
+			},
+			"bestandsformaat": {
+				"type": "string",
+				"defaultValue": ".las"
+			}
+		},
+		"variables": {
+			"beheertoolID": {
+				"type": "String"
+			},
+			"transformatieID": {
+				"type": "String"
+			},
+			"transformatieStatus": {
+				"type": "String"
+			},
+			"initiatieSysteemVersie": {
+				"type": "String",
+				"defaultValue": "CGI1"
+			},
+			"authenticatie": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-09T08:17:10Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

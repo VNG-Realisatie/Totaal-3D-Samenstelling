@@ -1,0 +1,38 @@
+{
+	"name": "BIMtrigger",
+	"properties": {
+		"description": "Trigger voor het automatisch opstarten van BIM keten. ",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "proefplatform_BIM",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"initiatieWijze": "StorageEvent",
+					"initiatorPersoon": "J. Doe",
+					"initiatorAfdeling": "Geodata",
+					"inputBestandsnaamLink": "@concat(triggerBody().folderPath,'/', triggerBody().fileName)",
+					"initiatieSysteemId": "0",
+					"initiatieSysteemObjectid": "1",
+					"naamBestand": "@triggerBody().fileName",
+					"gebruikteAlgoritme": "BIM",
+					"outputBestandsnaamLink": "@concat('out/BIM',triggerBody().fileName)",
+					"bestandsformaat": ".ifc"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/testing-portaal/blobs/in/BIM-proefplatform",
+			"blobPathEndsWith": ".ifc",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourceGroups/rg-t3d-s-weu-02/providers/Microsoft.Storage/storageAccounts/voorportaal",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

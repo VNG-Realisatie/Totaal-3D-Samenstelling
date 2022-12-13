@@ -1,0 +1,10 @@
+{
+	"name": "T3Dsleutels",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://T3D-sleutels.vault.azure.net/"
+		}
+	}
+}

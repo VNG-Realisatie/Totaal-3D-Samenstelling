@@ -1,0 +1,9 @@
+{
+	"name": "T3D-datastroom",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "9bc5e302-c5e8-4fbd-bfe8-f891938608f1",
+		"tenantId": "8c653938-6726-49c5-bca7-8e44a4bf2029"
+	}
+}

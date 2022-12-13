@@ -1,0 +1,777 @@
+{
+  "properties": {
+    "lenses": {
+      "0": {
+        "order": 0,
+        "parts": {
+          "0": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "colSpan": 8,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourceGroups/rg-t3d-s-weu-03/providers/microsoft.insights/components/voorportaal-insights"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "60baf5db-2dbd-4bd2-99bb-955c4147ce7b",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-25T15:52:26.000Z/2022-12-02T15:52:26.411Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "requests\n| summarize sum(itemCount) by name, resultCode\n| render barchart\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "StackedBar",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "voorportaal-insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "name",
+                      "type": "string"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "sum_itemCount",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [
+                      {
+                        "name": "resultCode",
+                        "type": "string"
+                      }
+                    ],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Status verwerkte items",
+                  "PartSubTitle": "Per azure functie"
+                }
+              }
+            }
+          },
+          "1": {
+            "position": {
+              "x": 8,
+              "y": 0,
+              "colSpan": 5,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourceGroups/rg-t3d-s-weu-03/providers/microsoft.insights/components/voorportaal-insights"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "85ee2238-2487-4c1c-8258-7e59d6154810",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-11-01T15:54:58.000Z/2022-12-02T15:54:58.246Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "requests\n| summarize sum(itemCount) by Hour=datetime_part(\"Hour\", timestamp), name, resultCode\n| order by Hour asc\n| render timechart\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "Line",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "voorportaal-insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "Hour",
+                      "type": "long"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "sum_itemCount",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [
+                      {
+                        "name": "name",
+                        "type": "string"
+                      }
+                    ],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Aantal bestanden verwerkt",
+                  "PartSubTitle": "Per uur van de dag"
+                }
+              }
+            }
+          },
+          "2": {
+            "position": {
+              "x": 13,
+              "y": 0,
+              "colSpan": 7,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "11200fa5-0ca9-4241-9707-805fc188f83f",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T16:01:47.000Z/2022-11-30T16:01:47.445Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "ADFActivityRun\n| where ActivityType == 'Copy'\n| extend OutputObject = parse_json(Output)\n| mv-expand OutputObject\n| where OutputObject contains 'dataRead'\n| extend DataSizeBytes = OutputObject.dataRead\n| extend DataSizeMB = DataSizeBytes * 0.000001\n| project PipelineName, OperationName, DataSizeMB, PipelineRunId, TimeGenerated\n| order by TimeGenerated desc\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Bestandsgrootte per pipeline run",
+                  "PartSubTitle": "Op basis van Copy activity"
+                }
+              }
+            }
+          },
+          "3": {
+            "position": {
+              "x": 0,
+              "y": 5,
+              "colSpan": 8,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "144ffe60-12d9-41e5-a955-7d23d3f4314c",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T15:52:26.000Z/2022-11-30T15:52:26.379Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "ADFPipelineRun \n| where PipelineName == 'proefplatform_cityJSON'\n| extend ParametersObject = parse_json(Parameters)\n| mv-expand ParametersObject\n| extend inputBestand = ParametersObject.naamBestand, initiatorAfdeling = ParametersObject.initiatorAfdeling\n| extend pipeline_status = case (OperationName == 'proefplatform_cityJSON - Queued', 'Queued', OperationName == 'proefplatform_cityJSON - InProgress', 'InProgress', OperationName == 'proefplatform_cityJSON - Failed', 'Failed',OperationName == 'proefplatform_cityJSON - Succeeded', 'Succeeded',\"-1\")\n| summarize count(inputBestand) by  pipeline_status, tostring(initiatorAfdeling)| render barchart\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "StackedBar",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "pipeline_status",
+                      "type": "string"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "count_inputBestand",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [
+                      {
+                        "name": "initiatorAfdeling",
+                        "type": "string"
+                      }
+                    ],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Aanvrager en pipeline status",
+                  "PartSubTitle": "Aantal per aanvrager en status pipeline"
+                }
+              }
+            }
+          },
+          "4": {
+            "position": {
+              "x": 8,
+              "y": 5,
+              "colSpan": 6,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "69d3ec2d-271d-4a14-8f98-10e22e4a0f43",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T15:41:15.000Z/2022-11-30T15:41:15.030Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "ADFPipelineRun\n| where PipelineName != 'pingPipeline'\n| where (Status == 'Failed' or Status == 'Succeeded')\n| extend Duration_minutes = datetime_diff('minute', End, Start)\n| summarize count(PipelineName) by Hour=datetime_part(\"Hour\", Start),  PipelineName\n| order by Hour asc\n| render timechart\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "Line",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "Hour",
+                      "type": "long"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "count_PipelineName",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [
+                      {
+                        "name": "PipelineName",
+                        "type": "string"
+                      }
+                    ],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Aantal verwerkingen per uur",
+                  "PartSubTitle": "Per pipeline"
+                }
+              }
+            }
+          },
+          "5": {
+            "position": {
+              "x": 14,
+              "y": 5,
+              "colSpan": 6,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                },
+                {
+                  "name": "options",
+                  "value": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/5b55e244-b937-49e2-8bb8-7ea4519c8f00/resourceGroups/T3D/providers/Microsoft.DataFactory/factories/T3D-datastroom"
+                          },
+                          "name": "TriggerSucceededRuns",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.datafactory/factories",
+                          "metricVisualization": {
+                            "displayName": "Succeeded trigger runs metrics",
+                            "resourceDisplayName": "T3D-datastroom"
+                          }
+                        },
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/5b55e244-b937-49e2-8bb8-7ea4519c8f00/resourceGroups/T3D/providers/Microsoft.DataFactory/factories/T3D-datastroom"
+                          },
+                          "name": "PipelineFailedRuns",
+                          "aggregationType": 1,
+                          "namespace": "microsoft.datafactory/factories",
+                          "metricVisualization": {
+                            "displayName": "Failed pipeline runs metrics",
+                            "resourceDisplayName": "T3D-datastroom"
+                          }
+                        }
+                      ],
+                      "title": "T3D datastroom triggers",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 1,
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideSubtitle": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        }
+                      },
+                      "timespan": {
+                        "absolute": {
+                          "startTime": "2022-05-09T15:40:05.924Z",
+                          "endTime": "2022-05-09T18:03:19.633Z"
+                        },
+                        "showUTCTime": false,
+                        "grain": 1
+                      }
+                    }
+                  },
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourceGroups/rg-t3d-s-weu-02/providers/Microsoft.DataFactory/factories/T3D-datastroom"
+                          },
+                          "name": "TriggerSucceededRuns",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.datafactory/factories",
+                          "metricVisualization": {
+                            "displayName": "Succeeded trigger runs metrics",
+                            "resourceDisplayName": "T3D-datastroom"
+                          }
+                        },
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourceGroups/rg-t3d-s-weu-02/providers/Microsoft.DataFactory/factories/T3D-datastroom"
+                          },
+                          "name": "PipelineFailedRuns",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.datafactory/factories",
+                          "metricVisualization": {
+                            "displayName": "Failed pipeline runs metrics",
+                            "resourceDisplayName": "T3D-datastroom"
+                          }
+                        }
+                      ],
+                      "title": "T3D datastroom triggers",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 1,
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideSubtitle": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        },
+                        "disablePinning": true
+                      }
+                    }
+                  }
+                }
+              },
+              "filters": {
+                "Name": {
+                  "model": {
+                    "operator": "notEquals",
+                    "values": [
+                      "pingPipeline"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "model": {
+        "timeRange": {
+          "value": {
+            "relative": {
+              "duration": 24,
+              "timeUnit": 1
+            }
+          },
+          "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+        },
+        "filterLocale": {
+          "value": "nl-nl"
+        },
+        "filters": {
+          "value": {
+            "MsPortalFx_TimeRange": {
+              "model": {
+                "format": "local",
+                "granularity": "auto",
+                "relative": "7d"
+              },
+              "displayCache": {
+                "name": "Local Time",
+                "value": "Past 7 days"
+              },
+              "filteredPartIds": [
+                "StartboardPart-LogsDashboardPart-b3a9ab9b-2047-4507-9109-850a85dcd009",
+                "StartboardPart-LogsDashboardPart-b3a9ab9b-2047-4507-9109-850a85dcd00b",
+                "StartboardPart-LogsDashboardPart-b3a9ab9b-2047-4507-9109-850a85dcd00d",
+                "StartboardPart-LogsDashboardPart-b3a9ab9b-2047-4507-9109-850a85dcd00f",
+                "StartboardPart-LogsDashboardPart-b3a9ab9b-2047-4507-9109-850a85dcd011",
+                "StartboardPart-MonitorChartPart-b3a9ab9b-2047-4507-9109-850a85dcd013"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "name": "T3D-procesmanager",
+  "type": "Microsoft.Portal/dashboards",
+  "location": "INSERT LOCATION",
+  "tags": {
+    "hidden-title": "T3D-procesmanager"
+  },
+  "apiVersion": "2015-08-01-preview"
+}

@@ -1,0 +1,48 @@
+{
+	"name": "wekelijkseUpdateDenHaag",
+	"properties": {
+		"description": "Wekelijkse update van Rioned data. Op latere termijn kunnen er andere scheduled pipelines toegevoegd worden. ",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "proefplatform_rioned",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"initiatieWijze": "schedule",
+					"initiatorPersoon": "Null",
+					"initiatorAfdeling": "Geo-data",
+					"initiatieSysteemId": "Rioned",
+					"initiatieSysteemObjectid": "Null",
+					"gebruikteAlgoritme": "Null",
+					"outputBestandsnaamLink": "Null",
+					"bestandsformaat": ".gml",
+					"stadScope": "DenHaag"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Week",
+				"interval": 1,
+				"startTime": "2022-11-14T20:00:00Z",
+				"endTime": "2022-12-17T00:30:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						20
+					],
+					"weekDays": [
+						"Sunday"
+					]
+				}
+			}
+		}
+	}
+}
