@@ -1,0 +1,2 @@
+#!/bin/bash
+xvfb-run CloudCompare -SILENT -AUTO_SAVE OFF -o $1 -o $2 -c2m_dist -FILTER_SF 0.2 10 -SOR 6 1 -C_EXPORT_FMT PLY -SAVE_CLOUDS FILE $(dirname $2)/$((basename $1) | cut -d. -f1)_c2mdiscrepancies.ply
