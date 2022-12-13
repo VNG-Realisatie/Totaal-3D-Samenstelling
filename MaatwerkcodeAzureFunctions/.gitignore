@@ -139,3 +139,5 @@ dmypy.json
 cython_debug/
 
 local.settings.json
+
+.python_packages
