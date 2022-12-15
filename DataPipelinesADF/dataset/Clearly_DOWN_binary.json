@@ -1,0 +1,29 @@
+{
+	"name": "Clearly_DOWN_binary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ClearlyBinary",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"modelId": {
+				"type": "string"
+			},
+			"version": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat('models/', dataset().modelId, '/versions/', dataset().version, '/cityjson')",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

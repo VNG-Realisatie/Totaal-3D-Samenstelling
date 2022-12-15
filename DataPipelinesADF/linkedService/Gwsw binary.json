@@ -1,0 +1,19 @@
+{
+	"name": "Gwsw binary",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://apps.gwsw.nl/report/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous",
+			"authHeaders": {
+				"Authentication": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
+		}
+	}
+}

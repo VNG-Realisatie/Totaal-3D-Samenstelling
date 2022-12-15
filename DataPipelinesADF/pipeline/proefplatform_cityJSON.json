@@ -1,0 +1,285 @@
+{
+	"name": "proefplatform_cityJSON",
+	"properties": {
+		"activities": [
+			{
+				"name": "Datamodel Validatie",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Authenticatie variabel",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/validatie",
+					"method": "POST",
+					"headers": {
+						"filename": {
+							"value": "@pipeline().parameters.naamBestand",
+							"type": "Expression"
+						},
+						"filepath": {
+							"value": "@pipeline().parameters.inputBestandsnaamLink",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Fail Datamodel",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Input data niet volgens datamodel geleverd",
+					"errorCode": "400"
+				}
+			},
+			{
+				"name": "POST beheertool",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/senddatatobeheertool",
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@variables('authenticatie')",
+							"type": "Expression"
+						},
+						"filename": {
+							"value": "@pipeline().parameters.naamBestand",
+							"type": "Expression"
+						},
+						"filepath": {
+							"value": "@pipeline().parameters.inputBestandsnaamLink",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set modelValilde",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "modelValide",
+					"value": {
+						"value": "@activity('Datamodel Validatie').output.ADFWebActivityResponseHeaders.valid",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Data versturen naar de locale opslag",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "voorportaal_input_binary",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "testing-portaal",
+							"filename": {
+								"value": "@pipeline().parameters.naamBestand",
+								"type": "Expression"
+							},
+							"directory": "in/amsterdam/"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Voorportaal_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "testing-portaal",
+							"directory": "out/proefplatform",
+							"filename": {
+								"value": "@pipeline().parameters.naamBestand",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "KeyVault",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://t3d-sleutels.vault.azure.net/secrets/sendToBeheertoolFunctionToken?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Authenticatie variabel",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "KeyVault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "authenticatie",
+					"value": {
+						"value": "@activity('KeyVault').output.value",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"initiatieWijze": {
+				"type": "string",
+				"defaultValue": "Handmatig"
+			},
+			"initiatorPersoon": {
+				"type": "string",
+				"defaultValue": "J. Doe"
+			},
+			"initiatorAfdeling": {
+				"type": "string",
+				"defaultValue": "Geodata"
+			},
+			"inputBestandsnaamLink": {
+				"type": "string",
+				"defaultValue": "in/amsterdam/0392100000006526.json"
+			},
+			"initiatieSysteemId": {
+				"type": "string",
+				"defaultValue": "0"
+			},
+			"initiatieSysteemObjectid": {
+				"type": "string",
+				"defaultValue": "0000"
+			},
+			"naamBestand": {
+				"type": "string",
+				"defaultValue": "0392100000006526.json"
+			},
+			"gebruikteAlgoritme": {
+				"type": "string",
+				"defaultValue": "Null"
+			},
+			"bestandsformaat": {
+				"type": "string",
+				"defaultValue": ".json"
+			}
+		},
+		"variables": {
+			"modelValide": {
+				"type": "String"
+			},
+			"initiatieSysteemVersie": {
+				"type": "String",
+				"defaultValue": "terugmeldingen1"
+			},
+			"authenticatie": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-11-09T11:02:20Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

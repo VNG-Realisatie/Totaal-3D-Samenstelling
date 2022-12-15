@@ -1,0 +1,31 @@
+{
+	"name": "puntenwolkenTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "proefplatform_puntenwolk",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"initiatieWijze": "puntenwolkenSim",
+					"inputBestandsnaamLink": "@triggerBody().folderPath",
+					"naamBestand": "@triggerBody().fileName",
+					"outputBestandsnaamLink": "out/puntenwolken/"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/testing-portaal/blobs/in/puntenwolken/",
+			"blobPathEndsWith": "subsampled.las",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourceGroups/rg-t3d-s-weu-02/providers/Microsoft.Storage/storageAccounts/voorportaal",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"name": "S3_sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureFunction_S3_upload",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

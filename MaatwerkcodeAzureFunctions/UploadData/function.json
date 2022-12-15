@@ -1,0 +1,28 @@
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "post", "options", "put"
+      ],
+      "route": "uploadCityJson"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    },
+
+    {
+      "type": "blob",
+      "direction": "out",
+      "name": "outputBlob",
+      "path": "testing-portaal/in/amsterdam/{rand-guid}.json",
+      "connection": "AzureStorageConnectionString"
+    }
+  ]
+}

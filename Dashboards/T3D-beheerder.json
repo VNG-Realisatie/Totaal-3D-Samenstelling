@@ -1,0 +1,913 @@
+{
+  "properties": {
+    "lenses": {
+      "0": {
+        "order": 0,
+        "parts": {
+          "0": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "colSpan": 8,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "2b05a458-4acc-4f3c-a14e-5b8d1b70315d",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-09-01T14:51:48.000Z/2022-11-23T14:51:48.931Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "ADFTriggerRun\n| where TriggerName != 'pingTrigger'\n| order by TimeGenerated desc\n| project Start, TriggerName, TriggerId, Status\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Trigger overzicht",
+                  "PartSubTitle": "Lijst met afgetrapte verwerkingen"
+                }
+              }
+            }
+          },
+          "1": {
+            "position": {
+              "x": 8,
+              "y": 0,
+              "colSpan": 7,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "7f5b4f62-15e4-4eea-855e-afeee0144180",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T09:28:53.000Z/2022-11-30T09:28:53.859Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let pipelineQueue = ADFPipelineRun\n| where Status == 'Queued'\n| where PipelineName != 'pingPipeline'\n| extend TimeGenerated_queue = TimeGenerated\n| project PipelineName, TimeGenerated_queue, Predecessors, CorrelationId;\nlet pipelineInProgress = ADFPipelineRun\n| where Status == 'InProgress'\n| where PipelineName != 'pingPipeline'\n| extend TimeGenerated_inprogress = TimeGenerated\n| project CorrelationId, TimeGenerated_inprogress;\npipelineQueue\n| join kind=inner pipelineInProgress on CorrelationId\n| extend duration_queue = datetime_diff('second', TimeGenerated_inprogress, TimeGenerated_queue)\n| summarize  avg(duration_queue) by Hour=datetime_part(\"Hour\", TimeGenerated_queue), PipelineName\n| order by Hour asc\n| render timechart\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "Line",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "Hour",
+                      "type": "long"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "avg_duration_queue",
+                        "type": "real"
+                      }
+                    ],
+                    "splitBy": [
+                      {
+                        "name": "PipelineName",
+                        "type": "string"
+                      }
+                    ],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Gemiddelde wachtijd in queue",
+                  "PartSubTitle": "In seconden, per uur, per pipeline"
+                }
+              }
+            }
+          },
+          "2": {
+            "position": {
+              "x": 15,
+              "y": 0,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "6796859c-3cf5-44c1-916d-ba39333a08cb",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T09:27:16.000Z/2022-11-30T09:27:16.587Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let pipelineinProgress = ADFPipelineRun\n| where Status == 'InProgress'\n| where PipelineName != 'pingPipeline'\n| extend TimeGenerated_inprogress = TimeGenerated\n| project PipelineName, TimeGenerated_inprogress, Predecessors, CorrelationId;let pipelineSucceeded = ADFPipelineRun\n| where Status == 'Succeeded'\n| where PipelineName != 'pingPipeline'\n| project CorrelationId, End;\npipelineSucceeded\n| join kind=inner pipelineinProgress on CorrelationId\n| extend duration_inprogress = datetime_diff('second', End, TimeGenerated_inprogress)\n| summarize  avg(duration_inprogress) by Hour=datetime_part(\"Hour\", TimeGenerated_inprogress), PipelineName\n| order by Hour asc\n| render timechart\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "Line",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "Hour",
+                      "type": "long"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "avg_duration_inprogress",
+                        "type": "real"
+                      }
+                    ],
+                    "splitBy": [
+                      {
+                        "name": "PipelineName",
+                        "type": "string"
+                      }
+                    ],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Gemiddelde verwerkingstijd",
+                  "PartSubTitle": "In seconden, per uur, per pipeline"
+                }
+              }
+            }
+          },
+          "3": {
+            "position": {
+              "x": 0,
+              "y": 4,
+              "colSpan": 8,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "22ae4ecd-3d04-494b-8d3c-6b7666437317",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T09:26:02.000Z/2022-11-30T09:26:02.842Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "ADFTriggerRun\n| where Status has 'Succeeded'\n| where TriggerName != 'pingTrigger'\n| summarize Count = countif(Status == 'Succeeded') by TriggerName\n| render barchart",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "StackedBar",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "TriggerName",
+                      "type": "string"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "Count",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Aantal succesvolle runs",
+                  "PartSubTitle": "Per trigger"
+                }
+              }
+            }
+          },
+          "4": {
+            "position": {
+              "x": 8,
+              "y": 4,
+              "colSpan": 7,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "127a7bf5-3ba8-4e01-9615-7a5d7b83735d",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T09:16:41.000Z/2022-11-30T09:16:41.591Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let total_ping = ADFActivityRun\n| where ActivityName contains \"ping\"\n| where Status == 'Succeeded' or Status == 'Failed'\n| summarize count(ActivityName) by ActivityName\n| extend TotalPing = count_ActivityName\n| project ActivityName, TotalPing;\nlet failed_ping = ADFActivityRun \n| where ActivityName contains \"ping\"\n| where Status == 'Failed'\n| summarize count(ActivityName) by ActivityName\n| extend TotalFailed = count_ActivityName\n| project ActivityName, TotalFailed;\nlet succes_ping = ADFActivityRun\n| where ActivityName contains \"ping\"\n| where Status == 'Succeeded'\n| summarize count(ActivityName) by ActivityName\n| extend TotalSuccess = count_ActivityName\n| project ActivityName, TotalSuccess;\nlet total_ping_succes = total_ping\n| join kind=leftouter  succes_ping on ActivityName;\ntotal_ping_succes\n| join kind=leftouter failed_ping on ActivityName\n| extend ProcentUp = TotalPing / TotalSuccess * 100\n| project ActivityName, ProcentUp, TotalPing, TotalSuccess, TotalFailed\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Service beschikbaarheid",
+                  "PartSubTitle": "Up time uitgedrukt in percentage succesvolle pings"
+                }
+              }
+            }
+          },
+          "5": {
+            "position": {
+              "x": 15,
+              "y": 4,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "22839a4d-900a-4e38-a059-cb4ff13563f1",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P7D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let lastPing = ADFActivityRun \n| where ActivityName contains \"ping\"\n| where Status == 'Succeeded' or Status == 'Failed'\n| summarize max(TimeGenerated) by ActivityName, Status\n| extend Tijdstip = max_TimeGenerated\n| order by Tijdstip desc;\nlet pingError = ADFActivityRun\n| where ActivityName contains \"ping\"\n| where Status == 'Failed'\n| extend Tijdstip = TimeGenerated\n| project ActivityName, Tijdstip, ErrorMessage\n| order by Tijdstip desc;\nlastPing\n| join kind=leftouter pingError on ActivityName, Tijdstip\n| project ActivityName, Status, Tijdstip, ErrorMessage",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Service Status",
+                  "PartSubTitle": "Status laatste ping"
+                }
+              }
+            }
+          },
+          "6": {
+            "position": {
+              "x": 0,
+              "y": 8,
+              "colSpan": 8,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "13ccd17a-6835-42d6-ba34-d8f1d2122b2b",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T09:26:38.000Z/2022-11-30T09:26:38.726Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let failedPipelineIds = ADFPipelineRun\n| where Status == 'Failed'\n| extend PipelineRunId = RunId\n| extend ParametersObject = parse_json(Parameters)\n| mv-expand ParametersObject\n| extend SysteemID = ParametersObject.initiatieSysteemId\n| where SysteemID >= 0\n| project PipelineRunId, PipelineName, Predecessors, SysteemID;\nlet failedRelActivities = ADFActivityRun\n| where PipelineRunId in (failedPipelineIds)\n| where Status == 'Failed';\nfailedRelActivities\n| join kind=inner failedPipelineIds on PipelineRunId\n| order by End desc\n| extend ParametersObject = parse_json(Predecessors)\n| mv-expand ParametersObject\n| extend TriggerNaam = ParametersObject.Name\n| summarize Count = count() by tostring(TriggerNaam)\n| render barchart\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "StackedBar",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "TriggerNaam",
+                      "type": "string"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "Count",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Aantal fouten",
+                  "PartSubTitle": "Per trigger"
+                }
+              }
+            }
+          },
+          "7": {
+            "position": {
+              "x": 8,
+              "y": 8,
+              "colSpan": 13,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourcegroups/rg-t3d-s-weu-02/providers/microsoft.operationalinsights/workspaces/adfpipelinelogs"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "1238eaf6-270b-4861-ad1a-e2b47f35d6ae",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "2022-10-01T15:15:10.000Z/2022-11-30T15:15:10.432Z",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let failedPipelineIds = ADFPipelineRun\n| where PipelineName != 'pingPipeline'\n| where Status == 'Failed'\n| extend PipelineRunId = RunId\n| extend ParametersObject = parse_json(Parameters)\n| mv-expand ParametersObject\n| extend SysteemID = ParametersObject.initiatieSysteemId\n| where SysteemID >= 0\n| project PipelineRunId, PipelineName, Predecessors, SysteemID;\nlet failedRelActivities = ADFActivityRun\n| where PipelineRunId in (failedPipelineIds)\n| where Status == 'Failed';\nfailedRelActivities\n| join kind=inner failedPipelineIds on PipelineRunId\n| order by End desc\n| project PipelineName, PipelineRunId, ErrorCode, Start, End, SysteemID, Predecessors\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "adfpipelinelogs",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Foutmeldingen",
+                  "PartSubTitle": "Per pipeline, per run"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "model": {
+        "timeRange": {
+          "value": {
+            "relative": {
+              "duration": 24,
+              "timeUnit": 1
+            }
+          },
+          "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+        },
+        "filterLocale": {
+          "value": "nl-nl"
+        },
+        "filters": {
+          "value": {
+            "MsPortalFx_TimeRange": {
+              "model": {
+                "format": "local",
+                "granularity": "auto",
+                "relative": "30d"
+              },
+              "displayCache": {
+                "name": "Lokale tijd",
+                "value": "Afgelopen 30 dagen"
+              },
+              "filteredPartIds": [
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e69312066",
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e69312068",
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e6931206a",
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e6931206c",
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e6931206e",
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e69312070",
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e69312072",
+                "StartboardPart-LogsDashboardPart-2d93395a-130f-402d-8d59-e48e69312074"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "name": "T3D-beheerder",
+  "type": "Microsoft.Portal/dashboards",
+  "location": "INSERT LOCATION",
+  "tags": {
+    "hidden-title": "T3D-beheerder"
+  },
+  "apiVersion": "2015-08-01-preview"
+}

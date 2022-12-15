@@ -1,0 +1,64 @@
+# Created by the script cgal_create_CMakeLists
+# This is the CMake script for compiling a set of CGAL applications.
+
+cmake_minimum_required(VERSION 3.1...3.15)
+
+project( planereconstruct )
+
+
+# CGAL and its components
+find_package( CGAL QUIET COMPONENTS )
+if ( NOT CGAL_FOUND )
+
+  message(STATUS "This project requires the CGAL library, and will not be compiled.")
+  return()
+
+endif()
+
+
+# Boost and its components
+find_package( Boost REQUIRED )
+
+if ( NOT Boost_FOUND )
+
+  message(STATUS "This project requires the Boost library, and will not be compiled.")
+
+  return()
+
+endif()
+
+find_package(MPFR REQUIRED)
+
+if(MPFR_FOUND AND NOT TARGET CGAL::MPFR_support)
+  add_library(CGAL::MPFR_support INTERFACE IMPORTED)
+  set_target_properties(CGAL::MPFR_support PROPERTIES
+    INTERFACE_COMPILE_DEFINITIONS "CGAL_USE_MPFR"
+    INTERFACE_INCLUDE_DIRECTORIES "${MPFR_INCLUDE_DIR}"
+    INTERFACE_LINK_LIBRARIES "${MPFR_LIBRARIES}")
+endif()
+
+find_package(GLPK REQUIRED)
+
+if(GLPK_FOUND AND NOT TARGET CGAL::GLPK_support)
+  add_library(CGAL::GLPK_support INTERFACE IMPORTED)
+  set_target_properties(CGAL::GLPK_support PROPERTIES
+    INTERFACE_COMPILE_DEFINITIONS "CGAL_USE_GLPK"
+    INTERFACE_INCLUDE_DIRECTORIES "${GLPK_INCLUDE_DIR}"
+    INTERFACE_LINK_LIBRARIES "${GLPK_LIBRARIES}")
+endif()
+
+# include for local directory
+
+# include for local package
+include_directories( BEFORE ../include )
+
+
+# Creating entries for target: planereconstruct
+# ############################
+
+add_executable( planereconstruct  planereconstruct.cpp )
+
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS planereconstruct )
+
+# Link the executable to CGAL and third-party libraries
+target_link_libraries(planereconstruct PRIVATE CGAL::CGAL CGAL::GLPK_support CGAL::MPFR_support)

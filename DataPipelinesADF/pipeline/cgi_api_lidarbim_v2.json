@@ -1,0 +1,408 @@
+{
+	"name": "cgi_api_lidarbim_v2",
+	"properties": {
+		"description": "Toevoeging metadata als parameters en uitpakken zip bestand vanuit CGI",
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat(pipeline().parameters.cgiApiUrl, pipeline().parameters.gebruikteAlgoritme, 'pointcloudUrl=', encodeUriComponent(pipeline().parameters.inputBestandsnaamLink1), '&', 'bimUrl=', encodeUriComponent(pipeline().parameters.inputBestandsnaamLink0), '&', 'name=', pipeline().parameters.naamBestand0)",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"X-API-KEY": {
+							"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/CGIkey/4284a7787f22454bbc76c4dbe1262883)",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Web1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "uid",
+					"value": {
+						"value": "@activity('Web1').output.uid",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains('success failed', variables('status'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "Wait1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@concat(pipeline().parameters.cgiApiUrl, pipeline().parameters.cgiApiCallStatus, '?uid=', variables('uid'))",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"headers": {
+									"X-API-KEY": {
+										"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/CGIkey/4284a7787f22454bbc76c4dbe1262883)",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Web",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "status",
+								"value": {
+									"value": "@activity('Web').output.status",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 30
+							}
+						}
+					],
+					"timeout": "7.00:00:00"
+				}
+			},
+			{
+				"name": "Switch1",
+				"type": "Switch",
+				"dependsOn": [
+					{
+						"activity": "Until1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@variables('status')",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "failed",
+							"activities": [
+								{
+									"name": "Fail",
+									"type": "Fail",
+									"dependsOn": [
+										{
+											"activity": "Copy data1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "API foutmelding",
+										"errorCode": "0001"
+									}
+								},
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "CGI_API_OUTPUT",
+											"type": "DatasetReference",
+											"parameters": {
+												"apiCall": {
+													"value": "@pipeline().parameters.cgiApiCallFailed",
+													"type": "Expression"
+												},
+												"uid": {
+													"value": "@variables('uid')",
+													"type": "Expression"
+												},
+												"apiName": {
+													"value": "@pipeline().parameters.cgiApiName",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Voorportaal_sink",
+											"type": "DatasetReference",
+											"parameters": {
+												"container": {
+													"value": "@pipeline().parameters.outputContainer",
+													"type": "Expression"
+												},
+												"directory": {
+													"value": "@pipeline().parameters.outputFolder",
+													"type": "Expression"
+												},
+												"filename": "failed_log.txt"
+											}
+										}
+									]
+								}
+							]
+						},
+						{
+							"value": "success",
+							"activities": [
+								{
+									"name": "Copy data",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET",
+												"requestTimeout": ""
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"parallelCopies": 1,
+										"dataIntegrationUnits": 2
+									},
+									"inputs": [
+										{
+											"referenceName": "CGI_API_OUTPUT",
+											"type": "DatasetReference",
+											"parameters": {
+												"apiCall": "@pipeline().parameters.cgiApiCallOutput",
+												"uid": "@variables('uid')",
+												"apiName": "@pipeline().parameters.cgiApiName"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Voorportaal_sink",
+											"type": "DatasetReference",
+											"parameters": {
+												"container": "@pipeline().parameters.outputContainer",
+												"directory": "@pipeline().parameters.outputFolder",
+												"filename": "@pipeline().parameters.naamBestand0"
+											}
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cgiApiUrl": {
+				"type": "string",
+				"defaultValue": "http://20.101.41.248:8081/api/LiDARBIM/"
+			},
+			"cgiApiCallStatus": {
+				"type": "string",
+				"defaultValue": "GetSingleProcessedLidarBim"
+			},
+			"cgiApiCallOutput": {
+				"type": "string",
+				"defaultValue": "DownloadResultsFolder"
+			},
+			"cgiApiName": {
+				"type": "string",
+				"defaultValue": "LIDARBIM"
+			},
+			"outputContainer": {
+				"type": "string",
+				"defaultValue": "testing-portaal"
+			},
+			"outputFolder": {
+				"type": "string",
+				"defaultValue": "out"
+			},
+			"initiatieWijze": {
+				"type": "string",
+				"defaultValue": "API"
+			},
+			"initiatorPersoon": {
+				"type": "string",
+				"defaultValue": "J. Doe"
+			},
+			"initiatorAfdeling": {
+				"type": "string",
+				"defaultValue": "Geodata"
+			},
+			"inputBestandsnaamLink0": {
+				"type": "string",
+				"defaultValue": "https://voorportaal.blob.core.windows.net/testing-portaal/in/BIM/20200323_24124_Huur_Alp_Aelbrecht.ifc"
+			},
+			"inputBestandsnaamLink1": {
+				"type": "string",
+				"defaultValue": "https://voorportaal.blob.core.windows.net/testing-portaal/in/puntenwolken/cl24124i2c_albplein-1_aligned_subsampled.las"
+			},
+			"initiatieSysteemId": {
+				"type": "string",
+				"defaultValue": "1"
+			},
+			"initiatieSysteemObjectid": {
+				"type": "string",
+				"defaultValue": "0000"
+			},
+			"naamBestand0": {
+				"type": "string",
+				"defaultValue": "20200323_24124_Huur_Alp_Aelbrecht.ifc1111"
+			},
+			"gebruikteAlgoritme": {
+				"type": "string",
+				"defaultValue": "UploadLidarBimData?"
+			},
+			"outputBestandsnaamLink": {
+				"type": "string"
+			},
+			"bestandsformaat0": {
+				"type": "string",
+				"defaultValue": ".ifc"
+			},
+			"bestandsformaat1": {
+				"type": "string",
+				"defaultValue": ".las"
+			},
+			"naamBestand1": {
+				"type": "string",
+				"defaultValue": "cl24124i2c_albplein-1_aligned_subsampled.las"
+			},
+			"cgiApiCallFailed": {
+				"type": "string",
+				"defaultValue": "DownloadFailedTaskLog"
+			}
+		},
+		"variables": {
+			"uid": {
+				"type": "String"
+			},
+			"status": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-08T15:13:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

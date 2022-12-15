@@ -1,0 +1,47 @@
+{
+	"name": "wekelijkseUpdateRotterdam",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "proefplatform_rioned",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"initiatieWijze": "schedule",
+					"initiatorPersoon": "Null",
+					"initiatorAfdeling": "Geo-data",
+					"initiatieSysteemId": "Rioned",
+					"initiatieSysteemObjectid": "Null",
+					"gebruikteAlgoritme": "Null",
+					"outputBestandsnaamLink": "Null",
+					"bestandsformaat": ".gml",
+					"stadScope": "Rotterdam"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Week",
+				"interval": 1,
+				"startTime": "2022-11-28T19:18:00Z",
+				"endTime": "2023-07-31T00:18:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						10
+					],
+					"hours": [
+						20
+					],
+					"weekDays": [
+						"Sunday"
+					]
+				}
+			}
+		}
+	}
+}

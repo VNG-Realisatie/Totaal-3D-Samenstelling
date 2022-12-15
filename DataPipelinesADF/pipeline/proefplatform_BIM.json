@@ -1,0 +1,405 @@
+{
+	"name": "proefplatform_BIM",
+	"properties": {
+		"activities": [
+			{
+				"name": "Datamodel Validatie",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Download model",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/Validatie",
+					"method": "POST",
+					"headers": {
+						"filename": {
+							"value": "@concat(pipeline().parameters.initiatieSysteemObjectid,'.json')",
+							"type": "Expression"
+						},
+						"filepath": {
+							"value": "@variables('outputBestandsnaamLink')",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Fail Datamodel",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Input data niet volgens datamodel geleverd",
+					"errorCode": "400"
+				}
+			},
+			{
+				"name": "POST beheertool",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/senddatatobeheertool",
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/sendToBeheertoolFunctionToken/086037d65d2541b598f43ad0c466d6a2)",
+							"type": "Expression"
+						},
+						"filename": {
+							"value": "@concat(pipeline().parameters.initiatieSysteemObjectid, '.json')",
+							"type": "Expression"
+						},
+						"filepath": {
+							"value": "@variables('outputBestandsnaamLink')",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set modelId",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "UploadBIM",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "modelId",
+					"value": {
+						"value": "@activity('UploadBIM').output.ADFWebActivityResponseHeaders.modelId",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set version",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set modelId",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "versie",
+					"value": {
+						"value": "20",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set modelValilde",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Datamodel Validatie",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "modelValide",
+					"value": {
+						"value": "@activity('Datamodel Validatie').output.ADFWebActivityResponseHeaders.valid",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Download model",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set output link",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET",
+							"requestTimeout": ""
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings",
+							"metadata": [
+								{
+									"name": "last_modified",
+									"value": "$$LASTMODIFIED"
+								}
+							]
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Clearly_DOWN_binary",
+						"type": "DatasetReference",
+						"parameters": {
+							"modelId": {
+								"value": "@variables('modelId')",
+								"type": "Expression"
+							},
+							"version": {
+								"value": "@variables('versie')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Voorportaal_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "testing-portaal",
+							"directory": "out/cityjson/BIM",
+							"filename": {
+								"value": "@concat(pipeline().parameters.initiatieSysteemObjectid,'.json')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Set output link",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set version",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "outputBestandsnaamLink",
+					"value": {
+						"value": "@concat('out/cityjson/BIM/',pipeline().parameters.initiatieSysteemObjectid, '.json')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "UploadBIM",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Authenticatie variabel",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://voorportaal.azurewebsites.net/api/TransformBIM",
+					"method": "POST",
+					"headers": {
+						"filename": {
+							"value": "@pipeline().parameters.naamBestand",
+							"type": "Expression"
+						},
+						"filepath": {
+							"value": "@pipeline().parameters.inputBestandsnaamLink",
+							"type": "Expression"
+						},
+						"Authorization": {
+							"value": "@Microsoft.KeyVault(SecretUri=https://t3d-sleutels.vault.azure.net/secrets/ClearlyKey/eea81d005574446b9f246730fe4dcf20)",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "@concat('{','}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "KeyVault",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://t3d-sleutels.vault.azure.net/secrets/ClearlyKey?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Authenticatie variabel",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "KeyVault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "authenticatie",
+					"value": {
+						"value": "@activity('KeyVault').output.value",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"initiatieWijze": {
+				"type": "string",
+				"defaultValue": "Handmatig test DH"
+			},
+			"initiatorPersoon": {
+				"type": "string",
+				"defaultValue": "T. Tester"
+			},
+			"initiatorAfdeling": {
+				"type": "string",
+				"defaultValue": "Geodata"
+			},
+			"inputBestandsnaamLink": {
+				"type": "string",
+				"defaultValue": "in/BIM/20220530_22018_Kwekerijweg Den Haag.ifc"
+			},
+			"initiatieSysteemId": {
+				"type": "string",
+				"defaultValue": "1"
+			},
+			"initiatieSysteemObjectid": {
+				"type": "string",
+				"defaultValue": "0000"
+			},
+			"naamBestand": {
+				"type": "string",
+				"defaultValue": "20220530_22018_Kwekerijweg Den Haag.ifc"
+			},
+			"gebruikteAlgoritme": {
+				"type": "string",
+				"defaultValue": "BIM"
+			},
+			"outputBestandsnaamLink": {
+				"type": "string",
+				"defaultValue": "Null"
+			},
+			"bestandsformaat": {
+				"type": "string",
+				"defaultValue": ".json"
+			}
+		},
+		"variables": {
+			"modelId": {
+				"type": "String"
+			},
+			"versie": {
+				"type": "String"
+			},
+			"modelValide": {
+				"type": "String"
+			},
+			"outputBestandsnaamLink": {
+				"type": "String"
+			},
+			"authenticatie": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-22T10:02:51Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

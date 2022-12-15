@@ -1,0 +1,38 @@
+{
+	"name": "CGI_API_OUTPUT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CGI_API_output",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"apiName": {
+					"value": "@dataset().apiName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"apiCall": {
+				"type": "string"
+			},
+			"uid": {
+				"type": "string"
+			},
+			"apiName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat(dataset().apiCall, '?uid=', dataset().uid)",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

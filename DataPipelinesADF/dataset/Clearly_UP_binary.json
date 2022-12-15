@@ -1,0 +1,17 @@
+{
+	"name": "Clearly_UP_binary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ClearlyBinary",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,13 @@
+{
+	"name": "ClearlyAPI",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Clearly",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

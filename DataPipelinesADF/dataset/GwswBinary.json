@@ -1,0 +1,26 @@
+{
+	"name": "GwswBinary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Gwsw binary",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"naamBestand": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().naamBestand",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

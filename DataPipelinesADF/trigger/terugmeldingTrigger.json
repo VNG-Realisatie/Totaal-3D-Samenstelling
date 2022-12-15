@@ -1,0 +1,35 @@
+{
+	"name": "terugmeldingTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "proefplatform_cityJSON",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"initiatieWijze": "StorageEvent",
+					"initiatorPersoon": "J. Doe",
+					"initiatorAfdeling": "Terugmeldingtool",
+					"inputBestandsnaamLink": "@concat(triggerBody().folderPath,'/', triggerBody().fileName)",
+					"initiatieSysteemId": "0",
+					"initiatieSysteemObjectid": "1",
+					"naamBestand": "@triggerBody().fileName",
+					"bestandsformaat": ".json"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/testing-portaal/blobs/in/amsterdam",
+			"blobPathEndsWith": ".json",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/2a828344-698c-40f3-8ad1-8ebdac189717/resourceGroups/rg-t3d-s-weu-02/providers/Microsoft.Storage/storageAccounts/voorportaal",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
