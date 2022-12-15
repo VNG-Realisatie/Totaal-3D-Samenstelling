@@ -20,4 +20,4 @@ Mogelijk om toegang te krijgen:
     - Er is een opslag (Azure Storage) nodig om data te versturen. 
 2. Maak een copie van deze repository met git (git clone) en open folder _MaatwerkcodeAzureFunctions_ als Visual Studio project
 3. Neem contact op met [Geodesk den Haag](mailto:geodesk@denhaag.nl) voor toegangstokens (zie ook kopje Toegangstokens)
-4. Voor lokale tests, dient u om de opgevraagde toegangstokens toe te voegen.
+4. Voor lokale tests, dient u om de opgevraagde toegangstokens toe te voegen aan een bestand local.settings.json
