@@ -19,5 +19,6 @@ Mogelijk om toegang te krijgen:
 1. Volg [deze handleiding](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs-code?source=recommendations&tabs=csharp) om je ontwikkelomgeving te voorbereiden
     - Er is een opslag (Azure Storage) nodig om data te versturen. 
 2. Maak een copie van deze repository met git (git clone) en open folder _MaatwerkcodeAzureFunctions_ als Visual Studio project
-3. Neem contact op met [Geodesk den Haag](mailto:geodesk@denhaag.nl) voor toegangstokens (zie ook kopje Toegangstokens)
-4. Voor lokale tests, dient u om de opgevraagde toegangstokens toe te voegen aan een bestand local.settings.json
+3. Neem contact op met [Geodesk den Haag](mailto:geodesk@denhaag.nl) voor toegangstokens
+4. Voor lokale tests, dient u om de opgevraagde toegangstokens toe te voegen aan een bestand local.settings.json.
+    * local.settings.json bevat alle benodigde placeholder tokens voor deze repository
