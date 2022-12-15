@@ -1,7 +1,7 @@
 # Totaal-3D-Samenstelling
 In deze repository wordt de code voor het samenstellen en voorbereiden van data voor het programma Totaal 3D gedeeld. In de onderliggende folders vindt u code en configuratie scripts om verder te ontwikkelen.
 ## Dashboards
-KQL scripts voor het opzetten van visuals in Azure. Doel van deze scripts is om de monitoring en beheer van dit infrastructuur sneller en eenvoudiger de maken.
+JSON scripts voor het opzetten van visuals in Azure. Doel van deze scripts is om de monitoring en beheer van dit infrastructuur sneller en eenvoudiger te maken.
 ## DataPipelinesADF
 JSON bestanden voor Azure Data Factory en het opzetten van data orkestratie. Doel van deze scripts is automatisch ophalen, verwerken en opslaan van data.
 ## Domeinverwerkingen
